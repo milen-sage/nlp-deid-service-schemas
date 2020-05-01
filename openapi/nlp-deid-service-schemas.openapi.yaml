@@ -1,111 +1,187 @@
-openapi: "3.0.0"
-info:
-  version: 1.0.0
-  title: Swagger Petstore
-  license:
-    name: MIT
+openapi: 3.0.0
+# Added by API Auto Mocking Plugin
 servers:
-  - url: http://petstore.swagger.io/v1
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/gkowalski/test/1.0.0
+info:
+  description: CD2H Notes DeIdentification API
+  version: "1.0.0"
+  title: CD2H Notes DeIdentification API
+  contact:
+    email: deid-notes@mcw.edu
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: developers
+    description: Operations available to regular developers
 paths:
-  /pets:
-    get:
-      summary: List all pets
-      operationId: listPets
+  /deid:
+    post:
       tags:
-        - pets
+        - developers
+      summary: searches inventory
+      operationId: searchInventory
+      description: |
+        By passing in the appropriate options, you can deidentify a given MedicalEHR Note
       parameters:
-        - name: limit
-          in: query
-          description: How many items to return at one time (max 100)
+        - in: query
+          name: deid
+          description: note to DeIdentify
           required: false
           schema:
-            type: integer
-            format: int32
+            $ref: '#/components/schemas/DeidRequest'
       responses:
         '200':
-          description: A paged array of pets
-          headers:
-            x-next:
-              description: A link to the next page of responses
-              schema:
-                type: string
-          content:
-            application/json:    
-              schema:
-                $ref: "#/components/schemas/Pets"
-        default:
-          description: unexpected error
+          description: search results matching criteria
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeidResponse'
+        '400':
+          description: bad input parameter
+
+
+  /blacklist:
     post:
-      summary: Create a pet
-      operationId: createPets
       tags:
-        - pets
-      responses:
-        '201':
-          description: Null response
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /pets/{petId}:
-    get:
-      summary: Info for a specific pet
-      operationId: showPetById
-      tags:
-        - pets
+        - developers
+      summary: Adds words to Black List
+      operationId: addBlackList
+      description:
+        Added a list of Black List words to the deidentification process to always block
       parameters:
-        - name: petId
-          in: path
-          required: true
-          description: The id of the pet to retrieve
+        - in: query
+          name: deid
+          description: list of black words
+          required: false
           schema:
             type: string
       responses:
-        '200':
-          description: Expected response to a valid request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pet"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+        '201':
+          description: list added
+        '400':
+          description: 'invalid input, object invalid'
+
+  /whitelist:
+    post:
+      tags:
+        - developers
+      summary: Adds words to White List
+      operationId: addWhiteList
+      description:
+        Added a list of White List words to the deidentification process to always let thru
+      parameters:
+        - in: query
+          name: deid
+          description: list of white words
+          required: false
+          schema:
+            type: string
+      responses:
+        '201':
+          description: list added
+        '400':
+          description: 'invalid input, object invalid'
+  /providers:
+    post:
+      tags:
+        - developers
+      summary: Adds provider names to Deid Process
+      operationId: addProviderList
+      description:
+        Added a list of Provider names  to the deidentification process
+      parameters:
+        - in: query
+          name: deid
+          description: list of Provider names
+          required: false
+          schema:
+            type: string
+      responses:
+        '201':
+          description: providers  added
+        '400':
+          description: 'invalid input, object invalid'
 components:
   schemas:
-    Pet:
+    DeidResponse:
       type: object
       required:
-        - id
-        - name
+        - noteId
+        - note
       properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        tag:
-          type: string
-    Pets:
-      type: array
-      items:
-        $ref: "#/components/schemas/Pet"
-    Error:
-      type: object
-      required:
-        - code
-        - message
-      properties:
-        code:
+        noteId:
           type: integer
           format: int32
-        message:
+          example: 1
+        note:
           type: string
+          example: "[PATIENT] was seen for this procedure"
+
+    DeidRequest:
+      type: object
+      required:
+        - note
+        - dateShift
+      properties:
+        noteId:
+          type: integer
+          format: int32
+          example: 1
+        note:
+          type: string
+          example: George Doe was seen for this procedure
+        daysOffset:
+          type: integer
+          format: int32
+          example: -10
+        patient:
+          $ref: '#/components/schemas/Patient'
+    Patient:
+      required:
+        - LastName
+      properties:
+        FirstName:
+          type: string
+          example: George
+        LastName:
+          type: string
+          example: Doe
+        mrn:
+          type: string
+          example: A99999999
+        address:
+          type: string
+          example: 123 E Main
+        city:
+          type: string
+          example: Milwaukee
+        zip:
+          type: string
+          example: 53130
+        email:
+          type: string
+          example: george@noname.com
+        birthDate:
+          type: string
+          example: 12/31/2019
+        phone1:
+          type: string
+          example: 408-867-5309
+        phone2:
+          type: string
+          example: 408-867-5309
+        patientAlias:
+          $ref: '#/components/schemas/PatientAlias'
+      type: object
+    PatientAlias:
+      type: object
+      required:
+        - alias
+      properties:
+        name:
+          type: string
+          example: "Porgey"
