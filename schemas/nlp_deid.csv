@@ -1,0 +1,11 @@
+Attribute,Description,Valid Values,Requires,Properties,Required,Parent,Requires Component,Source
+Person,"A person (alive, dead, undead, or fictional).",,,HumanName,,,,https://schema.org/Person
+HumanName,"A name of a human with text, parts and usage information.",,,,,Person,,https://www.hl7.org/fhir/datatypes.html#HumanName
+Patient,Demographics and other administrative information about an individual or animal receiving care or other health-related services.,,,"PatientName, PatientBirthDate",,Person,,https://www.hl7.org/fhir/patient.html
+PatientBirthDate,The date of birth for the individual.,,,,,birthDate,,https://www.hl7.org/fhir/patient-definitions.html#Patient.birthDate
+PatientName,A name associated with the individual.,,,,,HumanName,,https://www.hl7.org/fhir/patient-definitions.html#Patient.name
+Practitioner,A person who is directly or indirectly involved in the provisioning of healthcare.,,,"PractitionerName, PractitionerBirthDate",,Person,,https://www.hl7.org/fhir/practitioner.html
+PractitionerName,The name(s) associated with the practitioner.,,,,,HumanName,,https://www.hl7.org/fhir/practitioner-definitions.html#Practitioner.name
+PractitionerBirthDate,The date of birth for the practitioner.,,,,,birthDate,,https://www.hl7.org/fhir/practitioner-definitions.html#Practitioner.birthDate
+PatientContact,"Contact covers all kinds of contact parties: family members, business contacts, guardians, caregivers. Not applicable to register pedigree and family ties beyond use of having contact.",,,PatientContactName,,Person,,https://www.hl7.org/fhir/patient-definitions.html#Patient.contact
+PatientContactName,A name associated with the contact person,,,,,HumanName,,https://www.hl7.org/fhir/patient-definitions.html#Patient.contact.name
